@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Tweet</title>
+</head>
+<body>
+    <h2>Are you sure you want to delete this tweet?</h2>
+    <p><strong>{{ tweet.user.username }}</strong>: {{ tweet.content }}</p>
+    
+    {% if tweet.media %}
+        <img src="{{ tweet.media.url }}" alt="Tweet Image" style="max-width: 50%; height: 200px;">
+    {% endif %}
+
+    <p><small>{{ tweet.created_at }}</small></p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, delete</button>
+        <a href="{% url 'tweet_list_view' %}">Cancel</a>
+    </form>
+</body>
+</html>

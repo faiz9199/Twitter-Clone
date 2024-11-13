@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tweet List</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}!</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a></p>
+    {% endif %}
+    
+    <h1>Tweets</h1>
+    <a href="{% url 'tweet-create' %}">
+        <button>Create a tweet</button>
+    </a>
+    
+    <div class="tweet-list">
+        {% for tweet in tweets %}
+            <div class="tweet">
+                <p><strong>{{ tweet.user.username }}</strong></p>
+                <p>{{ tweet.content }}</p>
+                
+                {% if tweet.media %}
+                    <img src="{{ tweet.media.url }}" alt="Tweet Image" style="max-width: 50%; height: 200px;">
+                {% endif %}
+                
+                <p><small>{{ tweet.created_at }}</small></p>
+                
+                <!-- Display like count -->
+                <p>Likes: {{ tweet.likes.count }}</p>
+                
+                <!-- Like/Unlike button -->
+                <form action="{% url 'like_tweet_view' tweet.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if user.is_authenticated %}
+                        {% if tweet.is_liked_by_user %}
+                            <button type="submit">Unlike</button>
+                        {% else %}
+                            <button type="submit">Like</button>
+                        {% endif %}
+                    {% else %}
+                        <button type="button" onclick="alert('Please log in to like tweets')">Like</button>
+                    {% endif %}
+                </form>
+                
+                <!-- Edit/Delete buttons for the tweet owner -->
+                {% if tweet.user == user %}
+                    <a href="{% url 'tweet-edit' tweet.pk %}" class="edit-button">Edit</a>
+                    <a href="{% url 'tweet-delete' tweet.pk %}">Delete</a>
+                {% endif %}
+            </div>
+            <hr>
+        {% empty %}
+            <p>No tweets available.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
